@@ -1,0 +1,32 @@
+C:\Users\kacpe\Desktop\Projekt Zespołowy\Circle collision\Circle Collision\Circle Collision\obj\Debug\net8.0-windows\Circle_Collision.Form1.resources
+C:\Users\kacpe\Desktop\Projekt Zespołowy\Circle collision\Circle Collision\Circle Collision\obj\Debug\net8.0-windows\Circle Collision.csproj.GenerateResource.cache
+C:\Users\kacpe\Desktop\Projekt Zespołowy\Circle collision\Circle Collision\Circle Collision\obj\Debug\net8.0-windows\Circle Collision.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\kacpe\Desktop\Projekt Zespołowy\Circle collision\Circle Collision\Circle Collision\obj\Debug\net8.0-windows\Circle Collision.AssemblyInfoInputs.cache
+C:\Users\kacpe\Desktop\Projekt Zespołowy\Circle collision\Circle Collision\Circle Collision\obj\Debug\net8.0-windows\Circle Collision.AssemblyInfo.cs
+C:\Users\kacpe\Desktop\Projekt Zespołowy\Circle collision\Circle Collision\Circle Collision\obj\Debug\net8.0-windows\Circle Collision.csproj.CoreCompileInputs.cache
+C:\Users\kacpe\Desktop\Projekt Zespołowy\Circle collision\Circle Collision\Circle Collision\bin\Debug\net8.0-windows\Circle Collision.exe
+C:\Users\kacpe\Desktop\Projekt Zespołowy\Circle collision\Circle Collision\Circle Collision\bin\Debug\net8.0-windows\Circle Collision.deps.json
+C:\Users\kacpe\Desktop\Projekt Zespołowy\Circle collision\Circle Collision\Circle Collision\bin\Debug\net8.0-windows\Circle Collision.runtimeconfig.json
+C:\Users\kacpe\Desktop\Projekt Zespołowy\Circle collision\Circle Collision\Circle Collision\bin\Debug\net8.0-windows\Circle Collision.dll
+C:\Users\kacpe\Desktop\Projekt Zespołowy\Circle collision\Circle Collision\Circle Collision\bin\Debug\net8.0-windows\Circle Collision.pdb
+C:\Users\kacpe\Desktop\Projekt Zespołowy\Circle collision\Circle Collision\Circle Collision\obj\Debug\net8.0-windows\Circle Collision.dll
+C:\Users\kacpe\Desktop\Projekt Zespołowy\Circle collision\Circle Collision\Circle Collision\obj\Debug\net8.0-windows\refint\Circle Collision.dll
+C:\Users\kacpe\Desktop\Projekt Zespołowy\Circle collision\Circle Collision\Circle Collision\obj\Debug\net8.0-windows\Circle Collision.pdb
+C:\Users\kacpe\Desktop\Projekt Zespołowy\Circle collision\Circle Collision\Circle Collision\obj\Debug\net8.0-windows\Circle Collision.genruntimeconfig.cache
+C:\Users\kacpe\Desktop\Projekt Zespołowy\Circle collision\Circle Collision\Circle Collision\obj\Debug\net8.0-windows\ref\Circle Collision.dll
+C:\Users\kacpe\Desktop\Projekt Zespołowy\Balls_Movement\Circle Collision\Circle Collision\bin\Debug\net8.0-windows\Circle Collision.exe
+C:\Users\kacpe\Desktop\Projekt Zespołowy\Balls_Movement\Circle Collision\Circle Collision\bin\Debug\net8.0-windows\Circle Collision.deps.json
+C:\Users\kacpe\Desktop\Projekt Zespołowy\Balls_Movement\Circle Collision\Circle Collision\bin\Debug\net8.0-windows\Circle Collision.runtimeconfig.json
+C:\Users\kacpe\Desktop\Projekt Zespołowy\Balls_Movement\Circle Collision\Circle Collision\bin\Debug\net8.0-windows\Circle Collision.dll
+C:\Users\kacpe\Desktop\Projekt Zespołowy\Balls_Movement\Circle Collision\Circle Collision\bin\Debug\net8.0-windows\Circle Collision.pdb
+C:\Users\kacpe\Desktop\Projekt Zespołowy\Balls_Movement\Circle Collision\Circle Collision\obj\Debug\net8.0-windows\Circle_Collision.Form1.resources
+C:\Users\kacpe\Desktop\Projekt Zespołowy\Balls_Movement\Circle Collision\Circle Collision\obj\Debug\net8.0-windows\Circle Collision.csproj.GenerateResource.cache
+C:\Users\kacpe\Desktop\Projekt Zespołowy\Balls_Movement\Circle Collision\Circle Collision\obj\Debug\net8.0-windows\Circle Collision.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\kacpe\Desktop\Projekt Zespołowy\Balls_Movement\Circle Collision\Circle Collision\obj\Debug\net8.0-windows\Circle Collision.AssemblyInfoInputs.cache
+C:\Users\kacpe\Desktop\Projekt Zespołowy\Balls_Movement\Circle Collision\Circle Collision\obj\Debug\net8.0-windows\Circle Collision.AssemblyInfo.cs
+C:\Users\kacpe\Desktop\Projekt Zespołowy\Balls_Movement\Circle Collision\Circle Collision\obj\Debug\net8.0-windows\Circle Collision.csproj.CoreCompileInputs.cache
+C:\Users\kacpe\Desktop\Projekt Zespołowy\Balls_Movement\Circle Collision\Circle Collision\obj\Debug\net8.0-windows\Circle Collision.dll
+C:\Users\kacpe\Desktop\Projekt Zespołowy\Balls_Movement\Circle Collision\Circle Collision\obj\Debug\net8.0-windows\refint\Circle Collision.dll
+C:\Users\kacpe\Desktop\Projekt Zespołowy\Balls_Movement\Circle Collision\Circle Collision\obj\Debug\net8.0-windows\Circle Collision.pdb
+C:\Users\kacpe\Desktop\Projekt Zespołowy\Balls_Movement\Circle Collision\Circle Collision\obj\Debug\net8.0-windows\Circle Collision.genruntimeconfig.cache
+C:\Users\kacpe\Desktop\Projekt Zespołowy\Balls_Movement\Circle Collision\Circle Collision\obj\Debug\net8.0-windows\ref\Circle Collision.dll
