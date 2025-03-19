@@ -1,25 +1,42 @@
-
 using Circle_Collision.Classes;
 
 namespace Circle_Collision
 {
     public partial class Form1 : Form
     {
+        private bool simulationStarted = false;
         private int radius = 40;
         private float mass = 10;
         private List<Ball> balls = new List<Ball>();
         private List<Tuple<Ball, Ball>> collidingPairs = new List<Tuple<Ball, Ball>>();
         private System.Windows.Forms.Timer moveTimer;
+        private Ball draggedBall = null;
+        private PointF dragOffset;
         public Form1()
         {
             InitializeComponent();
             this.DoubleBuffered = true;
-            mainArea.Paint += new PaintEventHandler(mainArea_Paint);
-            System.Console.WriteLine("AAAAAAAAAAAA");
+            this.BackColor = Color.Black;
+            mainArea.BackColor = Color.Black;
+            mainArea.Paint += (sender, e) =>
+            {
+                Graphics g = e.Graphics;
+                Pen borderPen = new Pen(Color.FromArgb(244, 252, 19), 3);
+                g.DrawRectangle(borderPen, 0, 0, mainArea.Width - 3, mainArea.Height - 3);
+            };
+
+            balls.Add(new Ball(0, 10, 100, radius, new PointF(2, 2), new PointF(0, 0), mass, Color.Red));
+            balls.Add(new Ball(1, 300, 200, radius, new PointF(-3, 1), new PointF(0, 0), mass, Color.Blue));
+            balls.Add(new Ball(2, 100, 200, radius, new PointF(1, -2), new PointF(0, 0), mass, Color.Green));
+
             moveTimer = new System.Windows.Forms.Timer();
             moveTimer.Interval = 16;
             moveTimer.Tick += MoveBalls;
             moveTimer.Start();
+
+            mainArea.MouseDown += MainArea_MouseDown;
+            mainArea.MouseMove += MainArea_MouseMove;
+            mainArea.MouseUp += MainArea_MouseUp;
         }
 
         private void Form1_Load(object sender, EventArgs e)
@@ -27,51 +44,32 @@ namespace Circle_Collision
 
         }
 
-        private void addBallBtn_Click(object sender, EventArgs e)
+        private void MoveBalls(object sender, EventArgs e)
         {
-           
-            float posX = new Random().Next(10, mainArea.Width - radius * 2);
-            float posY = new Random().Next(10, mainArea.Height - radius * 2);
-            float speedX = new Random().Next(-5, 5);
-            float speedY = new Random().Next(-5, 5);
-            PointF acceleration = new Point(0,0);
-            PointF velocity = new PointF(speedX == 0 ? 1 : speedX, speedY == 0 ? 1 : speedY);
-            balls.Add(new Ball(balls.Count, posX, posY, radius, velocity, acceleration, mass));
-            
-            /* Testowe wartoœci satyczne
-            Point velocity = new Point(1,0);
-            balls.Add(new Ball(balls.Count, 10, 100, radius, velocity, acceleration,mass * 10));
-            Point velocity2 = new Point(0, 0);
-            balls.Add(new Ball(balls.Count, 500, 100, radius, velocity2, acceleration, mass));
-            */
-
-        }
-
-        private void MoveBalls (object sender, EventArgs e)
-        {
-            for(int i = 0; i < balls.Count; i++)
+            for (int i = 0; i < balls.Count; i++)
             {
                 Ball ball = balls[i];
 
-                ball.Velocity = new PointF(
-                    ball.Velocity.X + ball.Acceleration.X * 0.16f,
-                    ball.Velocity.Y + ball.Acceleration.Y * 0.16f
+                if (simulationStarted)
+                {
+                    ball.Velocity = new PointF(
+                        ball.Velocity.X + ball.Acceleration.X * 0.16f,
+                        ball.Velocity.Y + ball.Acceleration.Y * 0.16f
                     );
-                ball.PosX += ball.Velocity.X;
-                ball.PosY += ball.Velocity.Y;
+                    ball.PosX += ball.Velocity.X;
+                    ball.PosY += ball.Velocity.Y;
 
+                    if (ball.PosX <= 0 || ball.PosX + ball.Radius * 2 >= mainArea.Width)
+                        ball.Velocity = new PointF(-ball.Velocity.X, ball.Velocity.Y);
 
-                if (ball.PosX <= 0 || ball.PosX + ball.Radius * 2 >= mainArea.Width)
-                    ball.Velocity = new PointF(-ball.Velocity.X, ball.Velocity.Y);
+                    if (ball.PosY <= 0 || ball.PosY + ball.Radius * 2 >= mainArea.Height)
+                        ball.Velocity = new PointF(ball.Velocity.X, -ball.Velocity.Y);
 
-                if (ball.PosY <= 0 || ball.PosY + ball.Radius * 2 >= mainArea.Height)
-                    ball.Velocity = new PointF(ball.Velocity.X, -ball.Velocity.Y);
-
-                ball.PosX = Math.Clamp(ball.PosX, 0, mainArea.Width - ball.Radius * 2);
-                ball.PosY = Math.Clamp(ball.PosY, 0, mainArea.Height - ball.Radius * 2);
+                    ball.PosX = Math.Clamp(ball.PosX, 0, mainArea.Width - ball.Radius * 2);
+                    ball.PosY = Math.Clamp(ball.PosY, 0, mainArea.Height - ball.Radius * 2);
+                }
 
                 ball.UpdateBall();
-
             }
 
             var BallsOverlap = (Ball ball, Ball target) =>
@@ -79,7 +77,7 @@ namespace Circle_Collision
                 double dx = (ball.PosX + ball.Radius) - (target.PosX + target.Radius);
                 double dy = (ball.PosY + ball.Radius) - (target.PosY + target.Radius);
                 double distance = Math.Sqrt(dx * dx + dy * dy);
-                return distance <= ball.Radius  + target.Radius;
+                return distance <= ball.Radius + target.Radius;
             };
 
             var pairsToRemove = new List<Tuple<Ball, Ball>>();
@@ -96,7 +94,6 @@ namespace Circle_Collision
                         if (isColliding && !collidingPairs.Any(tuple => (tuple.Item1 == ball && tuple.Item2 == target ||
                                                                         tuple.Item1 == target && tuple.Item2 == ball)))
                         {
-                            // Adding to the list of colliding balls
                             collidingPairs.Add(new Tuple<Ball, Ball>(ball, target));
                         }
 
@@ -108,34 +105,30 @@ namespace Circle_Collision
 
                         if (isColliding)
                         {
-                            // Distance between the ball centers
                             double dx = (ball.PosX + ball.Radius) - (target.PosX + target.Radius);
                             double dy = (ball.PosY + ball.Radius) - (target.PosY + target.Radius);
                             double distance = Math.Sqrt(dx * dx + dy * dy);
 
                             float overlap = 0.5f * ((float)distance - ball.Radius - target.Radius);
 
-
-                            // Displace current ball
                             ball.PosX -= overlap * (ball.PosX - target.PosX) / (float)distance;
                             ball.PosY -= overlap * (ball.PosY - target.PosY) / (float)distance;
 
-                            // Displace target ball
                             target.PosX += overlap * (ball.PosX - target.PosX) / (float)distance;
                             target.PosY += overlap * (ball.PosY - target.PosY) / (float)distance;
 
                             HandleCollision(ball, target);
-                            
+
                         }
                     }
                 }
 
-                foreach(var pair in pairsToRemove)
+                foreach (var pair in pairsToRemove)
                 {
                     collidingPairs.Remove(pair);
                 }
 
-               
+
             }
             mainArea.Refresh();
         }
@@ -146,15 +139,12 @@ namespace Circle_Collision
             double dy = (ball1.PosY + ball1.Radius) - (ball2.PosY + ball2.Radius);
             double distance = Math.Sqrt(dx * dx + dy * dy);
 
-            // Wektor normalny
             float nx = (ball2.PosX - ball1.PosX) / (float)distance;
             float ny = (ball2.PosY - ball1.PosY) / (float)distance;
 
-            //Tangens 
             float tx = -ny;
             float ty = nx;
 
-            // Iloczyn skalarny
 
             float iloczynTan1 = ball1.Velocity.X * tx + ball1.Velocity.Y * ty;
             float iloczynTan2 = ball2.Velocity.X * tx + ball2.Velocity.Y * ty;
@@ -177,22 +167,115 @@ namespace Circle_Collision
         private void mainArea_Paint(object sender, PaintEventArgs e)
         {
             Graphics g = e.Graphics;
-            Pen p = new Pen(Color.FromArgb(199, 2, 18));
+            Pen p = new Pen(Color.FromArgb(244, 252, 19));
             Pen blackPen = new Pen(Brushes.Black);
             blackPen.Width = 1.5f;
             p.Width = 5.0f;
-            using (SolidBrush sb = new SolidBrush(Color.FromArgb(24, 171, 102)))
+
+            foreach (Ball ball in balls)
             {
-                foreach(Ball ball in balls)
+                using (SolidBrush sb = new SolidBrush(ball.Color))
                 {
-                    g.FillEllipse(sb,ball.BallToDraw);
+                    g.FillEllipse(sb, ball.BallToDraw);
                     g.DrawEllipse(blackPen, ball.BallToDraw);
                 }
+            }
 
-                foreach(var tuple in collidingPairs)
+            foreach (var tuple in collidingPairs)
+            {
+                g.DrawLine(p, new PointF(tuple.Item1.PosX + tuple.Item1.Radius, tuple.Item1.PosY + tuple.Item1.Radius), new PointF(tuple.Item2.PosX + tuple.Item2.Radius, tuple.Item2.PosY + tuple.Item2.Radius));
+            }
+        }
+
+        private void textBoxMass_TextChanged(object sender, EventArgs e)
+        {
+            int index = Array.IndexOf(textBoxesMass, sender as TextBox);
+            if (index >= 0 && float.TryParse(textBoxesMass[index].Text, out float newMass))
+            {
+                balls[index].Mass = newMass;
+            }
+        }
+
+        private void textBoxRadius_TextChanged(object sender, EventArgs e)
+        {
+            int index = Array.IndexOf(textBoxesRadius, sender as TextBox);
+            if (index >= 0 && int.TryParse(textBoxesRadius[index].Text, out int newRadius))
+            {
+                balls[index].Radius = newRadius;
+            }
+        }
+
+        private void textBoxAcceleration_TextChanged(object sender, EventArgs e)
+        {
+            int index = Array.IndexOf(textBoxesAcceleration, sender as TextBox);
+            if (index >= 0 && !string.IsNullOrWhiteSpace(textBoxesAcceleration[index].Text))
+            {
+                string[] accelerationValues = textBoxesAcceleration[index].Text.Split(',');
+                if (accelerationValues.Length == 2 && float.TryParse(accelerationValues[0], out float ax) && float.TryParse(accelerationValues[1], out float ay))
                 {
-                    g.DrawLine(p, new PointF(tuple.Item1.PosX + tuple.Item1.Radius ,tuple.Item1.PosY + tuple.Item1.Radius), new PointF(tuple.Item2.PosX + tuple.Item2.Radius, tuple.Item2.PosY + tuple.Item2.Radius));
+                    balls[index].Acceleration = new PointF(ax, ay);
                 }
+            }
+        }
+
+        private void textBoxVelocity_TextChanged(object sender, EventArgs e)
+        {
+            int index = Array.IndexOf(textBoxesVelocity, sender as TextBox);
+            if (index >= 0 && !string.IsNullOrWhiteSpace(textBoxesVelocity[index].Text))
+            {
+                string[] velocityValues = textBoxesVelocity[index].Text.Split(',');
+                if (velocityValues.Length == 2 && float.TryParse(velocityValues[0], out float vx) && float.TryParse(velocityValues[1], out float vy))
+                {
+                    balls[index].Velocity = new PointF(vx, vy);
+                }
+            }
+        }
+
+        private void StartButton_Click(object sender, EventArgs e)
+        {
+            simulationStarted = true;
+        }
+
+        private void StopButton_Click(object sender, EventArgs e)
+        {
+            simulationStarted = false;
+        }
+
+        private void MainArea_MouseDown(object sender, MouseEventArgs e)
+        {
+            if (e.Button == MouseButtons.Left && !simulationStarted)
+            {
+                foreach (Ball ball in balls)
+                {
+                    if (e.X >= ball.PosX && e.X <= ball.PosX + ball.Radius * 2 &&
+                        e.Y >= ball.PosY && e.Y <= ball.PosY + ball.Radius * 2)
+                    {
+                        draggedBall = ball;
+                        dragOffset = new PointF(e.X - ball.PosX, e.Y - ball.PosY);
+                        break;
+                    }
+                }
+            }
+        }
+
+        private void MainArea_MouseMove(object sender, MouseEventArgs e)
+        {
+            if (draggedBall != null && !simulationStarted)
+            {
+                draggedBall.PosX = e.X - dragOffset.X;
+                draggedBall.PosY = e.Y - dragOffset.Y;
+                draggedBall.PosX = Math.Clamp(draggedBall.PosX, 0, mainArea.Width - draggedBall.Radius * 2);
+                draggedBall.PosY = Math.Clamp(draggedBall.PosY, 0, mainArea.Height - draggedBall.Radius * 2);
+
+                mainArea.Refresh();
+            }
+        }
+
+        private void MainArea_MouseUp(object sender, MouseEventArgs e)
+        {
+            if (e.Button == MouseButtons.Left)
+            {
+                draggedBall = null;
             }
         }
     }

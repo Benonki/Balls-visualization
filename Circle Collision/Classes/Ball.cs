@@ -1,21 +1,19 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.Drawing;
 
 namespace Circle_Collision.Classes
 {
     class Ball
     {
         private float posX, posY, radius;
-        int id;
+        private int id;
         private float mass;
         private PointF acceleration;
         private PointF velocity;
         private RectangleF ball;
+        private Color color; 
 
-        public Ball(int id, float posX, float posY, float radius, PointF velocity, PointF acceleration, float mass)
+        public Ball(int id, float posX, float posY, float radius, PointF velocity, PointF acceleration, float mass, Color color)
         {
             PosX = posX;
             PosY = posY;
@@ -24,67 +22,30 @@ namespace Circle_Collision.Classes
             Acceleration = acceleration;
             Mass = mass;
             Id = id;
+            Color = color;
             BallToDraw = new RectangleF(PosX, PosY, Radius * 2, Radius * 2);
         }
 
-
-        public float Mass
-        {
-            get { return mass; }
-            set { mass = value; }
-        }
-
-        public int Id
-        {
-            get { return id; }
-            set { id = value; }
-        }
-
-        public float PosX
-        {
-            get { return posX; }
-            set { posX = value; }
-        }
-
-        public float PosY
-        {
-            get { return posY; }
-            set { posY = value; }
-        }
-
-        public float Radius
-        {
-            get { return radius; }
-            set { radius = value; }
-        }
-        public PointF Velocity
-        {
-            get { return velocity; }
-            set { velocity = value; }
-        }
-
-        public PointF Acceleration
-        {
-            get { return acceleration; }
-            set { acceleration = value; }
-        }
-
-        public RectangleF BallToDraw
-        {
-            get { return ball; }
-            set { ball = value; }
-        }
+        public float Mass { get; set; }
+        public int Id { get; set; }
+        public float PosX { get; set; }
+        public float PosY { get; set; }
+        public float Radius { get; set; }
+        public PointF Velocity { get; set; }
+        public PointF Acceleration { get; set; }
+        public RectangleF BallToDraw { get; set; }
+        public Color Color { get; set; } 
 
         public void UpdateBall()
         {
             BallToDraw = new RectangleF(PosX, PosY, Radius * 2, Radius * 2);
         }
 
-
-
-
-
-
-
+        public bool Contains(PointF point)
+        {
+            float dx = point.X - (PosX + Radius);
+            float dy = point.Y - (PosY + Radius);
+            return Math.Sqrt(dx * dx + dy * dy) <= Radius;
+        }
     }
 }
