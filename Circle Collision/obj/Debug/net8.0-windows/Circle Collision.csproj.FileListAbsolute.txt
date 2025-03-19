@@ -47,3 +47,20 @@ C:\Pracownia\Balls-visualization\Circle Collision\obj\Debug\net8.0-windows\refin
 C:\Pracownia\Balls-visualization\Circle Collision\obj\Debug\net8.0-windows\Circle Collision.pdb
 C:\Pracownia\Balls-visualization\Circle Collision\obj\Debug\net8.0-windows\Circle Collision.genruntimeconfig.cache
 C:\Pracownia\Balls-visualization\Circle Collision\obj\Debug\net8.0-windows\ref\Circle Collision.dll
+C:\Users\Jacob\source\repos\Balls-visualization\Circle Collision\bin\Debug\net8.0-windows\Circle Collision.exe
+C:\Users\Jacob\source\repos\Balls-visualization\Circle Collision\bin\Debug\net8.0-windows\Circle Collision.deps.json
+C:\Users\Jacob\source\repos\Balls-visualization\Circle Collision\bin\Debug\net8.0-windows\Circle Collision.runtimeconfig.json
+C:\Users\Jacob\source\repos\Balls-visualization\Circle Collision\bin\Debug\net8.0-windows\Circle Collision.dll
+C:\Users\Jacob\source\repos\Balls-visualization\Circle Collision\bin\Debug\net8.0-windows\Circle Collision.pdb
+C:\Users\Jacob\source\repos\Balls-visualization\Circle Collision\obj\Debug\net8.0-windows\Circle_Collision.Form1.resources
+C:\Users\Jacob\source\repos\Balls-visualization\Circle Collision\obj\Debug\net8.0-windows\Circle Collision.csproj.GenerateResource.cache
+C:\Users\Jacob\source\repos\Balls-visualization\Circle Collision\obj\Debug\net8.0-windows\Circle Collision.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\Jacob\source\repos\Balls-visualization\Circle Collision\obj\Debug\net8.0-windows\Circle Collision.AssemblyInfoInputs.cache
+C:\Users\Jacob\source\repos\Balls-visualization\Circle Collision\obj\Debug\net8.0-windows\Circle Collision.AssemblyInfo.cs
+C:\Users\Jacob\source\repos\Balls-visualization\Circle Collision\obj\Debug\net8.0-windows\Circle Collision.csproj.CoreCompileInputs.cache
+C:\Users\Jacob\source\repos\Balls-visualization\Circle Collision\obj\Debug\net8.0-windows\Circle Collision.sourcelink.json
+C:\Users\Jacob\source\repos\Balls-visualization\Circle Collision\obj\Debug\net8.0-windows\Circle Collision.dll
+C:\Users\Jacob\source\repos\Balls-visualization\Circle Collision\obj\Debug\net8.0-windows\refint\Circle Collision.dll
+C:\Users\Jacob\source\repos\Balls-visualization\Circle Collision\obj\Debug\net8.0-windows\Circle Collision.pdb
+C:\Users\Jacob\source\repos\Balls-visualization\Circle Collision\obj\Debug\net8.0-windows\Circle Collision.genruntimeconfig.cache
+C:\Users\Jacob\source\repos\Balls-visualization\Circle Collision\obj\Debug\net8.0-windows\ref\Circle Collision.dll

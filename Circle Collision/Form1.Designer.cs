@@ -52,7 +52,7 @@
             stopButton.Size = new Size(150, 40);
             stopButton.Name = "stopButton";
             stopButton.Text = "Stop symulacji";
-            stopButton.Click += StartButton_Click;
+            stopButton.Click += StopButton_Click;
             stopButton.ForeColor = Color.FromArgb(244, 252, 19);
             Controls.Add(stopButton);
 
