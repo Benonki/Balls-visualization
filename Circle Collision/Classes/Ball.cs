@@ -11,41 +11,39 @@ namespace Circle_Collision.Classes
         private PointF acceleration;
         private PointF velocity;
         private RectangleF ball;
-        private Color color; 
+        private Color color;
 
-        public Ball(int id, float posX, float posY, float radius, PointF velocity, PointF acceleration, float mass, Color color)
+        public Ball(int id, float posX, float posY, int radius, PointF velocity, PointF acceleration, float mass, Color color)
         {
             PosX = posX;
             PosY = posY;
             Radius = radius;
-            Velocity = velocity;
-            Acceleration = acceleration;
             Mass = mass;
             Id = id;
             Color = color;
-            BallToDraw = new RectangleF(PosX, PosY, Radius * 2, Radius * 2);
+            Angle = (float)Math.Atan2(velocity.Y, velocity.X);
+            Velocity = velocity;
+            Acceleration = acceleration;
+            Delay = 0;
+            IsDelayed = true;
         }
 
-        public float Mass { get; set; }
         public int Id { get; set; }
         public float PosX { get; set; }
         public float PosY { get; set; }
-        public float Radius { get; set; }
+        public int Radius { get; set; }
         public PointF Velocity { get; set; }
         public PointF Acceleration { get; set; }
-        public RectangleF BallToDraw { get; set; }
-        public Color Color { get; set; } 
-
-        public void UpdateBall()
-        {
-            BallToDraw = new RectangleF(PosX, PosY, Radius * 2, Radius * 2);
-        }
+        public float Mass { get; set; }
+        public Color Color { get; set; }
+        public float Angle { get; set; }
+        public float Delay { get; set; }  
+        public bool IsDelayed { get; set; }
+        public RectangleF BallToDraw => new RectangleF(PosX, PosY, Radius * 2, Radius * 2);
 
         public bool Contains(PointF point)
         {
-            float dx = point.X - (PosX + Radius);
-            float dy = point.Y - (PosY + Radius);
-            return Math.Sqrt(dx * dx + dy * dy) <= Radius;
+            return BallToDraw.Contains(point);
         }
     }
 }

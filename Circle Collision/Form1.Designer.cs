@@ -23,6 +23,7 @@
             textBoxesAcceleration = new TextBox[3];
             textBoxesVelocity = new TextBox[3];
             textBoxesRadius = new TextBox[3];
+            textBoxesDelay = new TextBox[3];
             startButton = new Button(); 
             stopButton = new Button(); 
 
@@ -39,7 +40,7 @@
             mainArea.Paint += mainArea_Paint;
 
             // Przycisk Start
-            startButton.Location = new Point(600, 500);
+            startButton.Location = new Point(610, 500);
             startButton.Size = new Size(150, 40);
             startButton.Name = "startButton";
             startButton.Text = "Start symulacji";
@@ -48,7 +49,7 @@
             Controls.Add(startButton);
 
             // Przycisk Stop
-            stopButton.Location = new Point(600, 550);
+            stopButton.Location = new Point(610, 550);
             stopButton.Size = new Size(150, 40);
             stopButton.Name = "stopButton";
             stopButton.Text = "Stop symulacji";
@@ -59,7 +60,7 @@
             // Tworzenie kontrolek dla 3 kulek
             for (int i = 0; i < 3; i++)
             {
-                int yOffset = 50 + i * 160;
+                int yOffset = 30 + i * 160;
 
                 // Etykieta kulki
                 labels[i] = new Label();
@@ -107,6 +108,15 @@
                 textBoxesVelocity[i].PlaceholderText = "Prędkość";
                 textBoxesVelocity[i].TextChanged += textBoxVelocity_TextChanged;
                 Controls.Add(textBoxesVelocity[i]);
+
+                // Pole opóźnienie
+                textBoxesDelay[i] = new TextBox();
+                textBoxesDelay[i].Location = new Point(650, yOffset + 110);
+                textBoxesDelay[i].Size = new Size(80, 27);
+                textBoxesDelay[i].Name = $"textBoxDelay{i + 1}";
+                textBoxesDelay[i].PlaceholderText = "Opóźnienie";
+                textBoxesDelay[i].TextChanged += textBoxDelay_TextChanged;
+                Controls.Add(textBoxesDelay[i]);
             }
 
             // Form1
@@ -131,6 +141,7 @@
         private TextBox[] textBoxesAcceleration;
         private TextBox[] textBoxesVelocity;
         private TextBox[] textBoxesRadius;
+        private TextBox[] textBoxesDelay;
         private Button startButton;
         private Button stopButton;
     }

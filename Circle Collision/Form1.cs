@@ -12,6 +12,7 @@ namespace Circle_Collision
         private System.Windows.Forms.Timer moveTimer;
         private Ball draggedBall = null;
         private PointF dragOffset;
+        private Ball rotatingLineBall = null;
         public Form1()
         {
             InitializeComponent();
@@ -25,9 +26,9 @@ namespace Circle_Collision
                 g.DrawRectangle(borderPen, 0, 0, mainArea.Width - 3, mainArea.Height - 3);
             };
 
-            balls.Add(new Ball(0, 10, 100, radius, new PointF(2, 2), new PointF(0, 0), mass, Color.Red));
-            balls.Add(new Ball(1, 300, 200, radius, new PointF(-3, 1), new PointF(0, 0), mass, Color.Blue));
-            balls.Add(new Ball(2, 100, 200, radius, new PointF(1, -2), new PointF(0, 0), mass, Color.Green));
+            balls.Add(new Ball(0, 50, 100, radius, new PointF(0, 2), new PointF(0, 0), mass, Color.Red));
+            balls.Add(new Ball(1, 300, 100, radius, new PointF(0, -2), new PointF(0, 0), mass, Color.Blue));
+            balls.Add(new Ball(2, 175, 250, radius, new PointF(0, -1), new PointF(0, 0), mass, Color.Green));
 
             moveTimer = new System.Windows.Forms.Timer();
             moveTimer.Interval = 16;
@@ -52,6 +53,16 @@ namespace Circle_Collision
 
                 if (simulationStarted)
                 {
+                    if (ball.Delay > 0)
+                    {
+                        ball.Delay -= 0.032f;
+                        continue;
+                    }
+                    else
+                    {
+                        ball.IsDelayed = false;
+                    }
+
                     ball.Velocity = new PointF(
                         ball.Velocity.X + ball.Acceleration.X * 0.16f,
                         ball.Velocity.Y + ball.Acceleration.Y * 0.16f
@@ -68,8 +79,6 @@ namespace Circle_Collision
                     ball.PosX = Math.Clamp(ball.PosX, 0, mainArea.Width - ball.Radius * 2);
                     ball.PosY = Math.Clamp(ball.PosY, 0, mainArea.Height - ball.Radius * 2);
                 }
-
-                ball.UpdateBall();
             }
 
             var BallsOverlap = (Ball ball, Ball target) =>
@@ -88,7 +97,6 @@ namespace Circle_Collision
                 {
                     if (target.Id != ball.Id)
                     {
-
                         bool isColliding = BallsOverlap(ball, target);
 
                         if (isColliding && !collidingPairs.Any(tuple => (tuple.Item1 == ball && tuple.Item2 == target ||
@@ -105,6 +113,12 @@ namespace Circle_Collision
 
                         if (isColliding)
                         {
+                            if (target.Delay > 0)
+                            {
+                                target.Delay = 0;
+                                target.IsDelayed = false;
+                            }
+
                             double dx = (ball.PosX + ball.Radius) - (target.PosX + target.Radius);
                             double dy = (ball.PosY + ball.Radius) - (target.PosY + target.Radius);
                             double distance = Math.Sqrt(dx * dx + dy * dy);
@@ -118,7 +132,6 @@ namespace Circle_Collision
                             target.PosY += overlap * (ball.PosY - target.PosY) / (float)distance;
 
                             HandleCollision(ball, target);
-
                         }
                     }
                 }
@@ -127,8 +140,6 @@ namespace Circle_Collision
                 {
                     collidingPairs.Remove(pair);
                 }
-
-
             }
             mainArea.Refresh();
         }
@@ -179,8 +190,19 @@ namespace Circle_Collision
                     g.FillEllipse(sb, ball.BallToDraw);
                     g.DrawEllipse(blackPen, ball.BallToDraw);
                 }
+
+                if (!simulationStarted)
+                {
+                    PointF center = new PointF(ball.PosX + ball.Radius, ball.PosY + ball.Radius);
+                    PointF lineEnd = new PointF(
+                        center.X + ball.Radius * 2 * (float)Math.Cos(ball.Angle),
+                        center.Y + ball.Radius * 2 * (float)Math.Sin(ball.Angle)
+                    );
+                    g.DrawLine(p, center, lineEnd);
+                }
             }
 
+            // Rysowanie linii miêdzy kulkami w przypadku kolizji
             foreach (var tuple in collidingPairs)
             {
                 g.DrawLine(p, new PointF(tuple.Item1.PosX + tuple.Item1.Radius, tuple.Item1.PosY + tuple.Item1.Radius), new PointF(tuple.Item2.PosX + tuple.Item2.Radius, tuple.Item2.PosY + tuple.Item2.Radius));
@@ -192,6 +214,14 @@ namespace Circle_Collision
             int index = Array.IndexOf(textBoxesMass, sender as TextBox);
             if (index >= 0 && float.TryParse(textBoxesMass[index].Text, out float newMass))
             {
+                // wartoœæ do zakresu 1-50
+                newMass = Math.Clamp(newMass, 1, 50);
+
+                if (newMass.ToString() != textBoxesMass[index].Text)
+                {
+                    textBoxesMass[index].Text = newMass.ToString();
+                }
+
                 balls[index].Mass = newMass;
             }
         }
@@ -201,6 +231,14 @@ namespace Circle_Collision
             int index = Array.IndexOf(textBoxesRadius, sender as TextBox);
             if (index >= 0 && int.TryParse(textBoxesRadius[index].Text, out int newRadius))
             {
+                // wartoœæ do zakresu 1-50
+                newRadius = Math.Clamp(newRadius, 1, 50);
+
+                if (newRadius.ToString() != textBoxesRadius[index].Text)
+                {
+                    textBoxesRadius[index].Text = newRadius.ToString();
+                }
+
                 balls[index].Radius = newRadius;
             }
         }
@@ -213,6 +251,16 @@ namespace Circle_Collision
                 string[] accelerationValues = textBoxesAcceleration[index].Text.Split(',');
                 if (accelerationValues.Length == 2 && float.TryParse(accelerationValues[0], out float ax) && float.TryParse(accelerationValues[1], out float ay))
                 {
+                    // wartoœci sk³adowych przyspieszenia do zakresu 1-50
+                    ax = Math.Clamp(ax, 1, 50);
+                    ay = Math.Clamp(ay, 1, 50);
+
+                    string newText = $"{ax},{ay}";
+                    if (newText != textBoxesAcceleration[index].Text)
+                    {
+                        textBoxesAcceleration[index].Text = newText;
+                    }
+
                     balls[index].Acceleration = new PointF(ax, ay);
                 }
             }
@@ -226,13 +274,52 @@ namespace Circle_Collision
                 string[] velocityValues = textBoxesVelocity[index].Text.Split(',');
                 if (velocityValues.Length == 2 && float.TryParse(velocityValues[0], out float vx) && float.TryParse(velocityValues[1], out float vy))
                 {
+                    // wartoœci sk³adowych prêdkoœci do zakresu 1-50
+                    vx = Math.Clamp(vx, 1, 50);
+                    vy = Math.Clamp(vy, 1, 50);
+
+                    string newText = $"{vx},{vy}";
+                    if (newText != textBoxesVelocity[index].Text)
+                    {
+                        textBoxesVelocity[index].Text = newText;
+                    }
+
                     balls[index].Velocity = new PointF(vx, vy);
                 }
             }
         }
 
+        private void textBoxDelay_TextChanged(object sender, EventArgs e)
+        {
+            int index = Array.IndexOf(textBoxesDelay, sender as TextBox);
+            if (index >= 0 && float.TryParse(textBoxesDelay[index].Text, out float delay))
+            {
+                delay = Math.Clamp(delay, 1, 50);
+
+                if (delay.ToString() != textBoxesDelay[index].Text)
+                {
+                    textBoxesDelay[index].Text = delay.ToString();
+                }
+                balls[index].Delay = delay;
+            }
+        }
+
         private void StartButton_Click(object sender, EventArgs e)
         {
+            for (int i = 0; i < balls.Count; i++)
+            {
+                if (float.TryParse(textBoxesDelay[i].Text, out float delay))
+                {
+                    balls[i].Delay = delay;
+                    balls[i].IsDelayed = true;
+                }
+                else
+                {
+                    balls[i].Delay = 0;
+                    balls[i].IsDelayed = false;
+                }
+            }
+
             simulationStarted = true;
         }
 
@@ -240,18 +327,31 @@ namespace Circle_Collision
         {
             simulationStarted = false;
         }
-
         private void MainArea_MouseDown(object sender, MouseEventArgs e)
         {
             if (e.Button == MouseButtons.Left && !simulationStarted)
             {
                 foreach (Ball ball in balls)
                 {
-                    if (e.X >= ball.PosX && e.X <= ball.PosX + ball.Radius * 2 &&
-                        e.Y >= ball.PosY && e.Y <= ball.PosY + ball.Radius * 2)
+                    if (ball.Contains(new PointF(e.X, e.Y)))
                     {
                         draggedBall = ball;
                         dragOffset = new PointF(e.X - ball.PosX, e.Y - ball.PosY);
+                        break;
+                    }
+                }
+
+                foreach (Ball ball in balls)
+                {
+                    PointF center = new PointF(ball.PosX + ball.Radius, ball.PosY + ball.Radius);
+                    PointF lineEnd = new PointF(
+                        center.X + ball.Radius * 2 * (float)Math.Cos(ball.Angle),
+                        center.Y + ball.Radius * 2 * (float)Math.Sin(ball.Angle)
+                    );
+
+                    if (IsPointOnLine(center, lineEnd, new PointF(e.X, e.Y), 5))
+                    {
+                        rotatingLineBall = ball;
                         break;
                     }
                 }
@@ -269,6 +369,22 @@ namespace Circle_Collision
 
                 mainArea.Refresh();
             }
+
+            if (rotatingLineBall != null && !simulationStarted)
+            {
+                PointF center = new PointF(rotatingLineBall.PosX + rotatingLineBall.Radius, rotatingLineBall.PosY + rotatingLineBall.Radius);
+                float deltaX = e.X - center.X;
+                float deltaY = e.Y - center.Y;
+                rotatingLineBall.Angle = (float)Math.Atan2(deltaY, deltaX);
+
+                float speed = (float)Math.Sqrt(rotatingLineBall.Velocity.X * rotatingLineBall.Velocity.X + rotatingLineBall.Velocity.Y * rotatingLineBall.Velocity.Y);
+                rotatingLineBall.Velocity = new PointF(
+                    speed * (float)Math.Cos(rotatingLineBall.Angle),
+                    speed * (float)Math.Sin(rotatingLineBall.Angle)
+                );
+
+                mainArea.Refresh();
+            }
         }
 
         private void MainArea_MouseUp(object sender, MouseEventArgs e)
@@ -276,7 +392,26 @@ namespace Circle_Collision
             if (e.Button == MouseButtons.Left)
             {
                 draggedBall = null;
+                rotatingLineBall = null;
             }
+        }
+
+        private bool IsPointOnLine(PointF start, PointF end, PointF point, float tolerance)
+        {
+            float minX = Math.Min(start.X, end.X) - tolerance;
+            float maxX = Math.Max(start.X, end.X) + tolerance;
+            float minY = Math.Min(start.Y, end.Y) - tolerance;
+            float maxY = Math.Max(start.Y, end.Y) + tolerance;
+
+            if (point.X < minX || point.X > maxX || point.Y < minY || point.Y > maxY)
+                return false;
+
+            float dx = end.X - start.X;
+            float dy = end.Y - start.Y;
+            float length = (float)Math.Sqrt(dx * dx + dy * dy);
+            float distance = Math.Abs((end.X - start.X) * (start.Y - point.Y) - (start.X - point.X) * (end.Y - start.Y)) / length;
+
+            return distance <= tolerance;
         }
     }
 }
