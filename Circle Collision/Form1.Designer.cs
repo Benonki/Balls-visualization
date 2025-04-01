@@ -20,7 +20,6 @@
             mainArea = new PictureBox();
             labels = new Label[3];
             textBoxesMass = new TextBox[3];
-            textBoxesAcceleration = new TextBox[3];
             textBoxesVelocity = new TextBox[3];
             textBoxesRadius = new TextBox[3];
             textBoxesDelay = new TextBox[3];
@@ -57,6 +56,13 @@
             stopButton.ForeColor = Color.FromArgb(244, 252, 19);
             Controls.Add(stopButton);
 
+            Color[] labelColors = new Color[]
+           {
+                Color.Red,
+                Color.Blue,
+                Color.Green
+           };
+
             // Tworzenie kontrolek dla 3 kulek
             for (int i = 0; i < 3; i++)
             {
@@ -69,7 +75,7 @@
                 labels[i].Name = $"labelBall{i + 1}";
                 labels[i].Size = new Size(100, 20);
                 labels[i].Text = $"Kulka {i + 1}";
-                labels[i].ForeColor = Color.FromArgb(244, 252, 19);
+                labels[i].ForeColor = labelColors[i]; 
                 labels[i].Font = new Font("Arial", 10, FontStyle.Bold);
                 Controls.Add(labels[i]);
 
@@ -91,15 +97,6 @@
                 textBoxesRadius[i].TextChanged += textBoxRadius_TextChanged;
                 Controls.Add(textBoxesRadius[i]);
 
-                // Pole przyspieszenie
-                textBoxesAcceleration[i] = new TextBox();
-                textBoxesAcceleration[i].Location = new Point(600, yOffset + 70);
-                textBoxesAcceleration[i].Size = new Size(80, 27);
-                textBoxesAcceleration[i].Name = $"textBoxAcceleration{i + 1}";
-                textBoxesAcceleration[i].PlaceholderText = "Przyspieszenie";
-                textBoxesAcceleration[i].TextChanged += textBoxAcceleration_TextChanged;
-                Controls.Add(textBoxesAcceleration[i]);
-
                 // Pole prędkość
                 textBoxesVelocity[i] = new TextBox();
                 textBoxesVelocity[i].Location = new Point(700, yOffset + 70);
@@ -111,7 +108,7 @@
 
                 // Pole opóźnienie
                 textBoxesDelay[i] = new TextBox();
-                textBoxesDelay[i].Location = new Point(650, yOffset + 110);
+                textBoxesDelay[i].Location = new Point(600, yOffset + 70);
                 textBoxesDelay[i].Size = new Size(80, 27);
                 textBoxesDelay[i].Name = $"textBoxDelay{i + 1}";
                 textBoxesDelay[i].PlaceholderText = "Opóźnienie";
@@ -138,7 +135,6 @@
         private PictureBox mainArea;
         private Label[] labels;
         private TextBox[] textBoxesMass;
-        private TextBox[] textBoxesAcceleration;
         private TextBox[] textBoxesVelocity;
         private TextBox[] textBoxesRadius;
         private TextBox[] textBoxesDelay;
