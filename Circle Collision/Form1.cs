@@ -19,19 +19,21 @@ namespace Circle_Collision
             this.DoubleBuffered = true;
             this.BackColor = Color.Black;
             mainArea.BackColor = Color.Black;
+
             mainArea.Paint += (sender, e) =>
             {
                 Graphics g = e.Graphics;
-                Pen borderPen = new Pen(Color.FromArgb(244, 252, 19), 3);
-                g.DrawRectangle(borderPen, 0, 0, mainArea.Width - 3, mainArea.Height - 3);
+                Pen borderPen = new Pen(Color.FromArgb(244, 252, 19), 1);
+                g.DrawRectangle(borderPen, 0, 0, mainArea.Width, mainArea.Height);
             };
+
 
             balls.Add(new Ball(0, 50, 100, radius, 2, (float)Math.PI / 2, 0, mass, Color.Red));
             balls.Add(new Ball(1, 300, 100, radius, 2, (float)(-Math.PI / 2), 0, mass, Color.Blue));
             balls.Add(new Ball(2, 175, 250, radius, 2, (float)(-Math.PI / 2), 0, mass, Color.Green));
 
             moveTimer = new System.Windows.Forms.Timer();
-            moveTimer.Interval = 16;
+            moveTimer.Interval = 16; // ~60 FPS
             moveTimer.Tick += MoveBalls;
             moveTimer.Start();
 
@@ -90,7 +92,9 @@ namespace Circle_Collision
         private void DetectCollisions()
         {
             collidingPairs.Clear();
-            var sortedBalls = balls.OrderByDescending(b => b.Radius).ToList();
+            var sortedBalls = balls.OrderByDescending(b => b.Radius)
+                                  .ToList();
+
             for (int i = 0; i < sortedBalls.Count; i++)
             {
                 for (int j = i + 1; j < sortedBalls.Count; j++)
@@ -98,7 +102,6 @@ namespace Circle_Collision
                     Ball largerBall = sortedBalls[i];
                     Ball smallerBall = sortedBalls[j];
 
-                    // Pomijaj kolizje jeœli obie pi³ki maj¹ opóŸnienie
                     if (largerBall.IsDelayed && smallerBall.IsDelayed) continue;
 
                     float dx = (smallerBall.PosX + smallerBall.Radius) - (largerBall.PosX + largerBall.Radius);
@@ -111,7 +114,6 @@ namespace Circle_Collision
 
                     if (distance < collisionThreshold)
                     {
-                        // Jeœli któraœ z pi³ek mia³a opóŸnienie, usuñ je
                         if (largerBall.IsDelayed)
                         {
                             largerBall.Delay = 0;
@@ -125,7 +127,8 @@ namespace Circle_Collision
 
                         collidingPairs.Add(new Tuple<Ball, Ball>(largerBall, smallerBall));
 
-                        if (isTinyBall)
+                        bool isActuallyBelow = (smallerBall.PosY + smallerBall.Radius) > (largerBall.PosY + largerBall.Radius);
+                        if (isTinyBall && isActuallyBelow)
                         {
                             HandleTinyBallCollision(smallerBall, largerBall, dx, dy, distance);
                         }
@@ -152,58 +155,57 @@ namespace Circle_Collision
 
         private void HandleTinyBallCollision(Ball tinyBall, Ball largeBall, float dx, float dy, float distance)
         {
-            //Oblicz normalizowany wektor kolizji
-            float nx = dx / distance;
-            float ny = dy / distance;
+            float nx = dx / distance;  // Normalizowany wektor kolizji X
+            float ny = dy / distance;  // Normalizowany wektor kolizji Y
 
-            //Oblicz g³êbokoœæ penetracji (jak bardzo kulki siê nak³adaj¹)
-            float penetrationDepth = (largeBall.Radius * 0.85f + tinyBall.Radius) - distance;
+            // Rzeczywista ró¿nica pozycji (uwzglêdniaj¹ca ró¿ne promienie)
+            float penetrationDepth = (tinyBall.Radius + largeBall.Radius) - distance;
             if (penetrationDepth <= 0) return;
 
-            //P³ynne wypchniêcie (zamiast natychmiastowej korekty)
-            float pushFactor = 0.2f; // Im mniejsza wartoœæ, tym p³ynniejsze wypychanie
-            float pushX = nx * penetrationDepth * pushFactor;
-            float pushY = ny * penetrationDepth * pushFactor;
+            // Obliczanie odpowiednich przesuniêæ, które zmieniaj¹ pozycjê pi³ek
+            float moveAmount = penetrationDepth * 0.5f;  // Proporcjonalne przesuniêcie, aby unikn¹æ "teleportacji"
 
-            //Zastosuj wypchniêcie proporcjonalnie do mas
-            tinyBall.PosX += pushX * (largeBall.Mass / (tinyBall.Mass + largeBall.Mass)) * 2f;
-            tinyBall.PosY += pushY * (largeBall.Mass / (tinyBall.Mass + largeBall.Mass)) * 2f;
-            largeBall.PosX -= pushX * (tinyBall.Mass / (tinyBall.Mass + largeBall.Mass));
-            largeBall.PosY -= pushY * (tinyBall.Mass / (tinyBall.Mass + largeBall.Mass));
+            // Wypchniêcie pi³ek tak, by nie zachodzi³y na siebie
+            tinyBall.PosX += nx * moveAmount * (largeBall.Mass / (tinyBall.Mass + largeBall.Mass));
+            tinyBall.PosY += ny * moveAmount * (largeBall.Mass / (tinyBall.Mass + largeBall.Mass));
+            largeBall.PosX -= nx * moveAmount * (tinyBall.Mass / (tinyBall.Mass + largeBall.Mass));
+            largeBall.PosY -= ny * moveAmount * (tinyBall.Mass / (tinyBall.Mass + largeBall.Mass));
 
-            //Oblicz prêdkoœci wzglêdne
-            float tvx = tinyBall.Speed * (float)Math.Cos(tinyBall.Direction);
-            float tvy = tinyBall.Speed * (float)Math.Sin(tinyBall.Direction);
-            float lvx = largeBall.Speed * (float)Math.Cos(largeBall.Direction);
-            float lvy = largeBall.Speed * (float)Math.Sin(largeBall.Direction);
+            // Obliczenie prêdkoœci przed kolizj¹
+            float tinyVelX = tinyBall.Speed * (float)Math.Cos(tinyBall.Direction);
+            float tinyVelY = tinyBall.Speed * (float)Math.Sin(tinyBall.Direction);
+            float largeVelX = largeBall.Speed * (float)Math.Cos(largeBall.Direction);
+            float largeVelY = largeBall.Speed * (float)Math.Sin(largeBall.Direction);
 
-            //Oblicz sk³adow¹ prêdkoœci wzd³u¿ normalnej
-            float velocityAlongNormal = (tvx - lvx) * nx + (tvy - lvy) * ny;
+            // Prêdkoœæ wzglêdna wzd³u¿ normalnej
+            float relativeVel = (tinyVelX - largeVelX) * nx + (tinyVelY - largeVelY) * ny;
 
-            //Jeœli kulki oddalaj¹ siê od siebie, nie wykonuj odbicia
-            if (velocityAlongNormal > 0) return;
+            if (relativeVel > 0) return; // Jeœli kulki ju¿ siê oddalaj¹, nie zmieniamy nic
 
-            //Oblicz impuls (z fizyki kolizji)
-            float restitution = 0.6f; // Wspó³czynnik odbicia
-            float j = -(1 + restitution) * velocityAlongNormal;
+            // Wspó³czynnik sprê¿ystoœci (jak bardzo odbicie jest elastyczne)
+            float restitution = 0.8f;
+
+            // Impuls kolizji
+            float j = -(1 + restitution) * relativeVel;
             j /= (1 / tinyBall.Mass + 1 / largeBall.Mass);
 
-            //Zastosuj impuls do prêdkoœci
-            tvx += (j * nx) / tinyBall.Mass;
-            tvy += (j * ny) / tinyBall.Mass;
-            lvx -= (j * nx) / largeBall.Mass;
-            lvy -= (j * ny) / largeBall.Mass;
+            // Nowe prêdkoœci po odbiciu
+            tinyVelX += (j * nx) / tinyBall.Mass;
+            tinyVelY += (j * ny) / tinyBall.Mass;
+            largeVelX -= (j * nx) / largeBall.Mass;
+            largeVelY -= (j * ny) / largeBall.Mass;
 
-            //Aktualizuj prêdkoœci i kierunki
-            tinyBall.Speed = (float)Math.Sqrt(tvx * tvx + tvy * tvy);
-            tinyBall.Direction = (float)Math.Atan2(tvy, tvx);
-            largeBall.Speed = (float)Math.Sqrt(lvx * lvx + lvy * lvy);
-            largeBall.Direction = (float)Math.Atan2(lvy, lvx);
+            // Aktualizacja kierunku i prêdkoœci
+            tinyBall.Speed = (float)Math.Sqrt(tinyVelX * tinyVelX + tinyVelY * tinyVelY);
+            tinyBall.Direction = (float)Math.Atan2(tinyVelY, tinyVelX);
+            largeBall.Speed = (float)Math.Sqrt(largeVelX * largeVelX + largeVelY * largeVelY);
+            largeBall.Direction = (float)Math.Atan2(largeVelY, largeVelX);
 
-            //Delikatne t³umienie dla stabilnoœci
-            tinyBall.Speed *= 0.97f;
+            // Stabilizowanie drgañ
+            tinyBall.Speed *= 0.98f;
             largeBall.Speed *= 0.99f;
         }
+
 
         private void HandleStandardCollision(Ball ball1, Ball ball2, float dx, float dy, float distance)
         {
@@ -244,24 +246,38 @@ namespace Circle_Collision
             Pen p = new Pen(Color.FromArgb(244, 252, 19)) { Width = 5.0f };
             Pen blackPen = new Pen(Brushes.Black) { Width = 1.5f };
 
-            foreach (Ball ball in balls)
-            {
-                using (SolidBrush sb = new SolidBrush(ball.Color))
+            var sortedBalls = balls.OrderBy(b => b.Radius).ToList();
+            foreach (Ball ball in sortedBalls)
                 {
-                    g.FillEllipse(sb, ball.BallToDraw);
-                    g.DrawEllipse(blackPen, ball.BallToDraw);
-                }
+                    using (SolidBrush sb = new SolidBrush(ball.Color))
+                    {
+                        g.FillEllipse(sb, ball.BallToDraw);
+                        g.DrawEllipse(blackPen, ball.BallToDraw);
+                    }
 
-                if (!simulationStarted)
-                {
-                    PointF center = new PointF(ball.PosX + ball.Radius, ball.PosY + ball.Radius);
-                    PointF lineEnd = new PointF(
-                        center.X + ball.Radius * 2 * (float)Math.Cos(ball.Direction),
-                        center.Y + ball.Radius * 2 * (float)Math.Sin(ball.Direction)
-                    );
-                    g.DrawLine(p, center, lineEnd);
+                    if (!simulationStarted)
+                    {
+                        PointF center = new PointF(ball.PosX + ball.Radius, ball.PosY + ball.Radius);
+                        PointF lineEnd = new PointF(
+                            center.X + ball.Radius * 2 * (float)Math.Cos(ball.Direction),
+                            center.Y + ball.Radius * 2 * (float)Math.Sin(ball.Direction)
+                        );
+                        g.DrawLine(p, center, lineEnd);
+                        float arrowSize = ball.Radius * 0.5f;
+                        float angle = (float)Math.Atan2(lineEnd.Y - center.Y, lineEnd.X - center.X); 
+                        PointF arrowPoint1 = new PointF(
+                            lineEnd.X - arrowSize * (float)Math.Cos(angle - Math.PI / 6),
+                            lineEnd.Y - arrowSize * (float)Math.Sin(angle - Math.PI / 6)
+                        );
+                        PointF arrowPoint2 = new PointF(
+                            lineEnd.X - arrowSize * (float)Math.Cos(angle + Math.PI / 6),
+                            lineEnd.Y - arrowSize * (float)Math.Sin(angle + Math.PI / 6)
+                        );
+
+                        g.DrawLine(p, lineEnd, arrowPoint1);
+                        g.DrawLine(p, lineEnd, arrowPoint2);
                 }
-            }
+                }
 
             //foreach (var tuple in collidingPairs)
             //{
