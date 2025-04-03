@@ -311,12 +311,9 @@ namespace Circle_Collision
                 // obliczamy rozmiar - im blizej tym wieksza
                 float depthFactor = 0.5f + 0.5f * (ball.PosX / mainArea.Width);
                 float baseSize = ball.Radius * 2.5f;
-                float scaledWidth = baseSize * depthFactor * 1.2f;
-                float scaledHeight = baseSize * depthFactor * 1.2f;
+                float scaledWidth = baseSize * depthFactor;
+                float scaledHeight = baseSize * depthFactor;
 
-                // Minimalne rozmiary pilek
-                scaledWidth = Math.Max(scaledWidth, 10);
-                scaledHeight = Math.Max(scaledHeight, 10);
 
                 // pozycja na podlodze
                 float ballBottom = floorLevel - 2;
@@ -345,7 +342,7 @@ namespace Circle_Collision
                     g.FillEllipse(sb, sideViewX - scaledWidth / 2, sideViewY, scaledWidth, scaledHeight);
                 }
 
-                // Draw obramówki wokó³ kulki
+                // obramówki wokó³ kulki
                 g.DrawEllipse(Pens.White, sideViewX - scaledWidth / 2, sideViewY, scaledWidth, scaledHeight);
 
                 // 3D 3ffect
@@ -377,20 +374,19 @@ namespace Circle_Collision
             }
         }
 
-        private void textBoxRadius_TextChanged(object sender, EventArgs e)
+        private void textBoxRadius_Leave(object sender, EventArgs e)
         {
             int index = Array.IndexOf(textBoxesRadius, sender as TextBox);
             if (index >= 0 && int.TryParse(textBoxesRadius[index].Text, out int newRadius))
             {
                 // wartoœæ do zakresu 10-50
                 newRadius = Math.Clamp(newRadius, 10, 50);
-
-                if (newRadius.ToString() != textBoxesRadius[index].Text)
-                {
-                    textBoxesRadius[index].Text = newRadius.ToString();
-                }
-
+                textBoxesRadius[index].Text = newRadius.ToString();
                 balls[index].Radius = newRadius;
+            }
+            else if (!string.IsNullOrEmpty(textBoxesRadius[index].Text))
+            {
+                textBoxesRadius[index].Text = balls[index].Radius.ToString();
             }
         }
 
@@ -399,7 +395,7 @@ namespace Circle_Collision
             int index = Array.IndexOf(textBoxesVelocity, sender as TextBox);
             if (index >= 0 && !string.IsNullOrWhiteSpace(textBoxesVelocity[index].Text))
             {
-                // wartoœæ do zakresu 1-50
+                // wartoœæ do zakresu 1-50 
                 if (float.TryParse(textBoxesVelocity[index].Text, out float speed))
                 {
                     speed = Math.Clamp(speed, 1, 50);
@@ -409,7 +405,6 @@ namespace Circle_Collision
                 }
             }
         }
-
 
         private void textBoxDelay_TextChanged(object sender, EventArgs e)
         {

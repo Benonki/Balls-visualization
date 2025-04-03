@@ -106,7 +106,7 @@
                 textBoxesRadius[i].Size = new Size(80, 27);
                 textBoxesRadius[i].Name = $"textBoxRadius{i + 1}";
                 textBoxesRadius[i].PlaceholderText = "Promień";
-                textBoxesRadius[i].TextChanged += textBoxRadius_TextChanged;
+                textBoxesRadius[i].Leave += textBoxRadius_Leave;
                 Controls.Add(textBoxesRadius[i]);
 
                 // Pole prędkość
