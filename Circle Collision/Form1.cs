@@ -28,7 +28,7 @@ namespace Circle_Collision
 
             balls.Add(new Ball(0, 50, 100, radius, 2, (float)Math.PI / 2, 0, mass, Color.Red));
             balls.Add(new Ball(1, 300, 100, radius, 2, (float)(-Math.PI / 2), 0, mass, Color.Blue));
-            balls.Add(new Ball(2, 175, 250, radius, 1, (float)(-Math.PI / 2), 0, mass, Color.Green));
+            balls.Add(new Ball(2, 175, 250, radius, 2, (float)(-Math.PI / 2), 0, mass, Color.Green));
 
             moveTimer = new System.Windows.Forms.Timer();
             moveTimer.Interval = 16;
@@ -53,7 +53,6 @@ namespace Circle_Collision
 
                 if (simulationStarted)
                 {
-                    DetectCollisions();
                     if (ball.Delay > 0)
                     {
                         ball.Delay -= 0.032f;
@@ -63,6 +62,8 @@ namespace Circle_Collision
                     {
                         ball.IsDelayed = false;
                     }
+
+                    DetectCollisions();
 
                     // Aktualizacja prêdkoœci
                     ball.Speed += ball.Acceleration * 0.16f;
@@ -97,6 +98,9 @@ namespace Circle_Collision
                     Ball largerBall = sortedBalls[i];
                     Ball smallerBall = sortedBalls[j];
 
+                    // Pomijaj kolizje jeœli obie pi³ki maj¹ opóŸnienie
+                    if (largerBall.IsDelayed && smallerBall.IsDelayed) continue;
+
                     float dx = (smallerBall.PosX + smallerBall.Radius) - (largerBall.PosX + largerBall.Radius);
                     float dy = (smallerBall.PosY + smallerBall.Radius) - (largerBall.PosY + largerBall.Radius);
                     float distance = (float)Math.Sqrt(dx * dx + dy * dy);
@@ -107,6 +111,18 @@ namespace Circle_Collision
 
                     if (distance < collisionThreshold)
                     {
+                        // Jeœli któraœ z pi³ek mia³a opóŸnienie, usuñ je
+                        if (largerBall.IsDelayed)
+                        {
+                            largerBall.Delay = 0;
+                            largerBall.IsDelayed = false;
+                        }
+                        if (smallerBall.IsDelayed)
+                        {
+                            smallerBall.Delay = 0;
+                            smallerBall.IsDelayed = false;
+                        }
+
                         collidingPairs.Add(new Tuple<Ball, Ball>(largerBall, smallerBall));
 
                         if (isTinyBall)
