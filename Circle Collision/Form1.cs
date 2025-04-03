@@ -87,6 +87,7 @@ namespace Circle_Collision
                 }
             }
             mainArea.Refresh();
+            sideViewArea.Refresh();
         }
 
         private void DetectCollisions()
@@ -286,6 +287,79 @@ namespace Circle_Collision
             //}
         }
 
+        private void sideViewArea_Paint(object sender, PaintEventArgs e)
+        {
+            Graphics g = e.Graphics;
+            g.Clear(Color.Black);
+
+            // widok z boku
+            Pen borderPen = new Pen(Color.FromArgb(244, 252, 19), 1);
+            g.DrawRectangle(borderPen, 0, 0, sideViewArea.Width - 1, sideViewArea.Height - 1);
+
+            // rysowanie podlogi
+            float floorLevel = sideViewArea.Height - 2;
+            using (Pen floorPen = new Pen(Color.FromArgb(244, 252, 19), 3))
+            {
+                g.DrawLine(floorPen, 0, floorLevel, sideViewArea.Width, floorLevel);
+            }
+
+            // sortujemy po pozycji x
+            var sortedBalls = balls.OrderBy(b => b.PosX).ToList();
+
+            foreach (Ball ball in sortedBalls)
+            {
+                // obliczamy rozmiar - im blizej tym wieksza
+                float depthFactor = 0.5f + 0.5f * (ball.PosX / mainArea.Width);
+                float baseSize = ball.Radius * 2.5f;
+                float scaledWidth = baseSize * depthFactor * 1.2f;
+                float scaledHeight = baseSize * depthFactor * 1.2f;
+
+                // Minimalne rozmiary pilek
+                scaledWidth = Math.Max(scaledWidth, 10);
+                scaledHeight = Math.Max(scaledHeight, 10);
+
+                // pozycja na podlodze
+                float ballBottom = floorLevel - 2;
+                float sideViewY = ballBottom - scaledHeight;
+
+                // obliczanie pozycji X z widoku z boku
+                float effectiveMainHeight = mainArea.Height - ball.Radius * 2;
+                float normalizedY = (ball.PosY) / effectiveMainHeight;
+                float sideViewX = scaledWidth / 2 + normalizedY * (sideViewArea.Width - scaledWidth);
+
+                // cieñ
+                using (SolidBrush shadowBrush = new SolidBrush(Color.FromArgb(80, 50, 50, 50)))
+                {
+                    float shadowWidth = scaledWidth * 1.4f;
+                    float shadowHeight = scaledHeight * 0.4f;
+                    g.FillEllipse(shadowBrush,
+                                sideViewX - shadowWidth / 2,
+                                floorLevel - shadowHeight / 3,
+                                shadowWidth,
+                                shadowHeight);
+                }
+
+                // rysowanie kulki
+                using (SolidBrush sb = new SolidBrush(ball.Color))
+                {
+                    g.FillEllipse(sb, sideViewX - scaledWidth / 2, sideViewY, scaledWidth, scaledHeight);
+                }
+
+                // Draw obramówki wokó³ kulki
+                g.DrawEllipse(Pens.White, sideViewX - scaledWidth / 2, sideViewY, scaledWidth, scaledHeight);
+
+                // 3D 3ffect
+                using (SolidBrush highlightBrush = new SolidBrush(Color.FromArgb(80, Color.White)))
+                {
+                    g.FillEllipse(highlightBrush,
+                                sideViewX - scaledWidth / 4,
+                                sideViewY + scaledHeight / 5,
+                                scaledWidth / 2,
+                                scaledHeight / 3);
+                }
+            }
+        }
+
         private void textBoxMass_TextChanged(object sender, EventArgs e)
         {
             int index = Array.IndexOf(textBoxesMass, sender as TextBox);
@@ -308,8 +382,8 @@ namespace Circle_Collision
             int index = Array.IndexOf(textBoxesRadius, sender as TextBox);
             if (index >= 0 && int.TryParse(textBoxesRadius[index].Text, out int newRadius))
             {
-                // wartoœæ do zakresu 1-50
-                newRadius = Math.Clamp(newRadius, 1, 50);
+                // wartoœæ do zakresu 10-50
+                newRadius = Math.Clamp(newRadius, 10, 50);
 
                 if (newRadius.ToString() != textBoxesRadius[index].Text)
                 {

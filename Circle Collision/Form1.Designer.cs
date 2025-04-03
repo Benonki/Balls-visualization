@@ -18,6 +18,7 @@
         private void InitializeComponent()
         {
             mainArea = new PictureBox();
+            sideViewArea = new PictureBox();
             labels = new Label[3];
             textBoxesMass = new TextBox[3];
             textBoxesVelocity = new TextBox[3];
@@ -27,6 +28,7 @@
             stopButton = new Button(); 
 
             ((System.ComponentModel.ISupportInitialize)mainArea).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)sideViewArea).BeginInit();
             SuspendLayout();
 
             // Obszar rysowania
@@ -37,6 +39,16 @@
             mainArea.TabIndex = 1;
             mainArea.TabStop = false;
             mainArea.Paint += mainArea_Paint;
+
+            //widok z boku prawej
+            sideViewArea.BorderStyle = BorderStyle.FixedSingle;
+            sideViewArea.Location = new Point(50, 560);
+            sideViewArea.Name = "sideViewArea";
+            sideViewArea.Size = new Size(500, 200);
+            sideViewArea.TabIndex = 2;
+            sideViewArea.TabStop = false;
+            sideViewArea.Paint += sideViewArea_Paint;
+
 
             // Przycisk Start
             startButton.Location = new Point(610, 500);
@@ -119,13 +131,15 @@
             // Form1
             AutoScaleDimensions = new SizeF(8F, 20F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(850, 600);
+            ClientSize = new Size(850, 800);
             Controls.Add(mainArea);
+            Controls.Add(sideViewArea);
             Name = "Form1";
             Text = "Circle Collision";
             Load += Form1_Load;
 
             ((System.ComponentModel.ISupportInitialize)mainArea).EndInit();
+            ((System.ComponentModel.ISupportInitialize)sideViewArea).EndInit();
             ResumeLayout(false);
             PerformLayout();
         }
@@ -133,6 +147,7 @@
         #endregion
 
         private PictureBox mainArea;
+        private PictureBox sideViewArea;
         private Label[] labels;
         private TextBox[] textBoxesMass;
         private TextBox[] textBoxesVelocity;
