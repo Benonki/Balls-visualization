@@ -302,16 +302,6 @@ namespace Circle_Collision
 
                 // obramówki wokó³ kulki
                 g.DrawEllipse(Pens.White, sideViewX - scaledWidth / 2, sideViewY, scaledWidth, scaledHeight);
-
-                // 3D 3ffect
-                using (SolidBrush highlightBrush = new SolidBrush(Color.FromArgb(80, Color.White)))
-                {
-                    g.FillEllipse(highlightBrush,
-                                sideViewX - scaledWidth / 4,
-                                sideViewY + scaledHeight / 5,
-                                scaledWidth / 2,
-                                scaledHeight / 3);
-                }
             }
         }
 
