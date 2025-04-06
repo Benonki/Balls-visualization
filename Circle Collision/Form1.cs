@@ -282,18 +282,6 @@ namespace Circle_Collision
                 float normalizedY = (ball.PosY) / effectiveMainHeight;
                 float sideViewX = scaledWidth / 2 + normalizedY * (sideViewArea.Width - scaledWidth);
 
-                // cieñ
-                using (SolidBrush shadowBrush = new SolidBrush(Color.FromArgb(80, 50, 50, 50)))
-                {
-                    float shadowWidth = scaledWidth * 1.4f;
-                    float shadowHeight = scaledHeight * 0.4f;
-                    g.FillEllipse(shadowBrush,
-                                sideViewX - shadowWidth / 2,
-                                floorLevel - shadowHeight / 3,
-                                shadowWidth,
-                                shadowHeight);
-                }
-
                 // rysowanie kulki
                 using (SolidBrush sb = new SolidBrush(ball.Color))
                 {
