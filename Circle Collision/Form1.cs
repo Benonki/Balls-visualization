@@ -204,6 +204,7 @@ namespace Circle_Collision
             Graphics g = e.Graphics;
             Pen p = new Pen(Color.FromArgb(244, 252, 19)) { Width = 5.0f };
             Pen blackPen = new Pen(Brushes.Black) { Width = 1.5f };
+            Pen whitePen = new Pen(Brushes.White) { Width = 1.5f };
 
             var sortedBalls = balls.OrderBy(b => b.Radius).ToList();
             foreach (Ball ball in sortedBalls)
@@ -211,7 +212,7 @@ namespace Circle_Collision
                     using (SolidBrush sb = new SolidBrush(ball.Color))
                     {
                         g.FillEllipse(sb, ball.BallToDraw);
-                        g.DrawEllipse(blackPen, ball.BallToDraw);
+                        g.DrawEllipse(whitePen, ball.BallToDraw);
                     }
 
                     if (!simulationStarted)
