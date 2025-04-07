@@ -204,6 +204,7 @@ namespace Circle_Collision
             Graphics g = e.Graphics;
             Pen p = new Pen(Color.FromArgb(244, 252, 19)) { Width = 5.0f };
             Pen blackPen = new Pen(Brushes.Black) { Width = 1.5f };
+            Pen whitePen = new Pen(Brushes.White) { Width = 1.5f };
 
             var sortedBalls = balls.OrderBy(b => b.Radius).ToList();
             foreach (Ball ball in sortedBalls)
@@ -211,7 +212,7 @@ namespace Circle_Collision
                     using (SolidBrush sb = new SolidBrush(ball.Color))
                     {
                         g.FillEllipse(sb, ball.BallToDraw);
-                        g.DrawEllipse(blackPen, ball.BallToDraw);
+                        g.DrawEllipse(whitePen, ball.BallToDraw);
                     }
 
                     if (!simulationStarted)
@@ -282,18 +283,6 @@ namespace Circle_Collision
                 float normalizedY = (ball.PosY) / effectiveMainHeight;
                 float sideViewX = scaledWidth / 2 + normalizedY * (sideViewArea.Width - scaledWidth);
 
-                // cieñ
-                using (SolidBrush shadowBrush = new SolidBrush(Color.FromArgb(80, 50, 50, 50)))
-                {
-                    float shadowWidth = scaledWidth * 1.4f;
-                    float shadowHeight = scaledHeight * 0.4f;
-                    g.FillEllipse(shadowBrush,
-                                sideViewX - shadowWidth / 2,
-                                floorLevel - shadowHeight / 3,
-                                shadowWidth,
-                                shadowHeight);
-                }
-
                 // rysowanie kulki
                 using (SolidBrush sb = new SolidBrush(ball.Color))
                 {
@@ -302,16 +291,6 @@ namespace Circle_Collision
 
                 // obramówki wokó³ kulki
                 g.DrawEllipse(Pens.White, sideViewX - scaledWidth / 2, sideViewY, scaledWidth, scaledHeight);
-
-                // 3D 3ffect
-                using (SolidBrush highlightBrush = new SolidBrush(Color.FromArgb(80, Color.White)))
-                {
-                    g.FillEllipse(highlightBrush,
-                                sideViewX - scaledWidth / 4,
-                                sideViewY + scaledHeight / 5,
-                                scaledWidth / 2,
-                                scaledHeight / 3);
-                }
             }
         }
 
